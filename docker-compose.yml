@@ -1,0 +1,46 @@
+version: "3.5"
+x-logging:
+  &default-logging
+  driver: json-file
+  options:
+    max-size: '5m'
+    max-file: '5'
+x-sysctls:
+  &default-sysctls
+  - net.core.somaxconn=1024
+x-ulimits:
+  &default-ulimits
+  nproc: 65535
+  nofile:
+    soft: 20000
+    hard: 40000
+
+services:
+  pritunl:
+    image: leonlei1983/pritunl
+    container_name: pritunl
+    network_mode: host
+    depends_on:
+      - mongo
+    volumes:
+      - $PWD/etc/pritunl.conf:/etc/pritunl.conf
+    privileged: true
+    restart: always
+    logging: *default-logging
+    sysctls: *default-sysctls
+    ulimits: *default-ulimits
+
+  mongo:
+    image: mongo:4.2.2
+    container_name: pritunl-mongo
+    network_mode: host
+    environment:
+      - TZ=Asia/Taipei
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    volumes:
+      - $PWD/mongo:/var/lib/mongo
+    restart: always
+    logging: *default-logging
+    sysctls: *default-sysctls
+    ulimits: *default-ulimits
