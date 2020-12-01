@@ -3,7 +3,7 @@ x-logging:
   &default-logging
   driver: json-file
   options:
-    max-size: '5m'
+    max-size: '20m'
     max-file: '5'
 x-sysctls:
   &default-sysctls
@@ -12,8 +12,8 @@ x-ulimits:
   &default-ulimits
   nproc: 65535
   nofile:
-    soft: 20000
-    hard: 40000
+    soft: 65535
+    hard: 65535
 
 services:
   pritunl:
@@ -39,7 +39,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
     volumes:
-      - $PWD/mongo:/var/lib/mongo
+      - $PWD/mongo:/data/db
     restart: always
     logging: *default-logging
     sysctls: *default-sysctls
